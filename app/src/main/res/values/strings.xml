@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Last Feed</string>
+    <string name="save_feed">SAVE</string>
+    <string name="save_feed_complete">Feed Saved</string>
+    <string name="right_button">R %d</string>
+    <string name="left_button">L %d</string>
+    <string name="snack">Snack</string>
+</resources>
