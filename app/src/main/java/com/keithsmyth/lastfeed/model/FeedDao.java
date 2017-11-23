@@ -10,7 +10,7 @@ import java.util.List;
 @Dao
 public interface FeedDao {
 
-    @Query("Select * From Feed Order by time DESC")
+    @Query("Select * From Feed Order by time DESC Limit 20")
     List<Feed> list();
 
     @Insert
