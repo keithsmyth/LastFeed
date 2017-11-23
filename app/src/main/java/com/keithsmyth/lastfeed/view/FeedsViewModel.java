@@ -19,7 +19,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-class FeedsViewModel extends ViewModel {
+public class FeedsViewModel extends ViewModel {
 
     final EditFeedViewModel editFeedViewModel = new EditFeedViewModel();
 
@@ -28,6 +28,9 @@ class FeedsViewModel extends ViewModel {
     private final MutableLiveData<List<Feed>> feeds = new MutableLiveData<>();
     private final MutableLiveData<Throwable> error = new MutableLiveData<>();
     private final CompositeSubscription subscriptions = new CompositeSubscription();
+
+    public FeedsViewModel() {
+    }
 
     void init(Context context) {
         if (feedDao == null) {
