@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -173,9 +174,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         void setFeeds(List<Feed> feeds) {
+            final List<Feed> oldList = this.feeds;
+            final List<Feed> newList = feeds;
+
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return oldList.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return newList.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return oldList.get(oldItemPosition).time == newList.get(newItemPosition).time;
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+                }
+            });
+
             this.feeds.clear();
             this.feeds.addAll(feeds);
-            notifyDataSetChanged();
+
+            result.dispatchUpdatesTo(this);
         }
     }
 }

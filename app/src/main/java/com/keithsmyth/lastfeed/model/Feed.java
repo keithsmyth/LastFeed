@@ -29,4 +29,26 @@ public class Feed {
         right = 0;
         snack = false;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Feed feed = (Feed) o;
+
+        if (time != feed.time) return false;
+        if (left != feed.left) return false;
+        if (right != feed.right) return false;
+        return snack == feed.snack;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (time ^ (time >>> 32));
+        result = 31 * result + left;
+        result = 31 * result + right;
+        result = 31 * result + (snack ? 1 : 0);
+        return result;
+    }
 }
