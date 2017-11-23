@@ -13,8 +13,11 @@ class EditFeedViewBinder {
               final OnSaveFeedClickListener saveFeedClickListener) {
         holder.model = model;
 
-        TimePickerCompat.setHour(holder.timePicker, model.hour);
-        TimePickerCompat.setMinute(holder.timePicker, model.minute);
+        int cacheHour = model.hour;
+        int cacheMinute = model.minute;
+
+        TimePickerCompat.setHour(holder.timePicker, cacheHour);
+        TimePickerCompat.setMinute(holder.timePicker, cacheMinute);
         holder.timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
             holder.model.hour = hourOfDay;
             holder.model.minute = minute;
