@@ -1,20 +1,14 @@
 package com.keithsmyth.lastfeed.view;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +29,7 @@ import static android.support.design.widget.BottomSheetBehavior.STATE_HIDDEN;
 import static com.keithsmyth.lastfeed.view.EditFeedViewModel.LEFT;
 import static com.keithsmyth.lastfeed.view.EditFeedViewModel.RIGHT;
 
-public class MainActivity extends AppCompatActivity implements LifecycleRegistryOwner {
+public class MainActivity extends AppCompatActivity {
 
     private static final String BOTTOM_SHEET_STATE = "BOTTOM_SHEET_STATE";
 
@@ -44,13 +38,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
     private EditFeedViewHolder editFeedViewHolder;
     private EditFeedViewBinder editFeedViewBinder;
     private FeedsViewModel feedsViewModel;
-
-    private final LifecycleRegistry registry = new LifecycleRegistry(this);
-
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return registry;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,63 +57,48 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
         setContentView(R.layout.activity_main);
 
         final View parent = findViewById(R.id.root);
-        CardView contentLayout = (CardView) findViewById(R.id.add_new_feed_layout);
-        bottomSheetBehavior = BottomSheetBehavior.from(contentLayout);
+        CardView addNewFeedLayout = findViewById(R.id.add_new_feed_layout);
+        bottomSheetBehavior = BottomSheetBehavior.from(addNewFeedLayout);
         if (savedInstanceState != null) {
             bottomSheetBehavior.setState(savedInstanceState.getInt(BOTTOM_SHEET_STATE, STATE_HIDDEN));
         }
 
-        editFeedViewHolder = new EditFeedViewHolder(findViewById(R.id.add_new_feed_layout));
+        editFeedViewHolder = new EditFeedViewHolder(addNewFeedLayout);
         editFeedViewBinder = new EditFeedViewBinder();
 
-        final OnSaveFeedClickListener saveFeedClickListener = new OnSaveFeedClickListener() {
-            @Override
-            public void onSaveFeedClicked(EditFeedViewModel feedViewModel) {
-                bottomSheetBehavior.setState(STATE_HIDDEN);
-                feedsViewModel.saveFeed();
-            }
+        final OnSaveFeedClickListener saveFeedClickListener = feedViewModel -> {
+            bottomSheetBehavior.setState(STATE_HIDDEN);
+            feedsViewModel.saveFeed();
         };
 
-        findViewById(R.id.add_new_feed_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                feedsViewModel.editFeedViewModel.newFeed();
-                editFeedViewBinder.bind(editFeedViewHolder, feedsViewModel.editFeedViewModel, saveFeedClickListener);
-            }
+        findViewById(R.id.add_new_feed_button).setOnClickListener(v -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            feedsViewModel.editFeedViewModel.newFeed();
+            editFeedViewBinder.bind(editFeedViewHolder, feedsViewModel.editFeedViewModel, saveFeedClickListener);
         });
 
-        RecyclerView recycler = (RecyclerView) findViewById(R.id.feed_recycler);
+        RecyclerView recycler = findViewById(R.id.feed_recycler);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setAdapter(adapter = new Adapter());
-        adapter.setEditFeedClickListener(new OnEditFeedClickListener() {
-            @Override
-            public void onEditFeedClicked(Feed feed) {
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                feedsViewModel.editFeedViewModel.editFeed(feed);
-                editFeedViewBinder.bind(editFeedViewHolder, feedsViewModel.editFeedViewModel, saveFeedClickListener);
-            }
+        adapter.setEditFeedClickListener(feed -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            feedsViewModel.editFeedViewModel.editFeed(feed);
+            editFeedViewBinder.bind(editFeedViewHolder, feedsViewModel.editFeedViewModel, saveFeedClickListener);
         });
 
         feedsViewModel = ViewModelProviders.of(this).get(FeedsViewModel.class);
         feedsViewModel.init(this);
 
-        feedsViewModel.feeds().observe(this, new Observer<List<Feed>>() {
-            @Override
-            public void onChanged(@Nullable List<Feed> feeds) {
-                if (feeds != null) {
-                    adapter.setFeeds(feeds);
-                }
+        feedsViewModel.feeds().observe(this, feeds -> {
+            if (feeds != null) {
+                adapter.setFeeds(feeds);
             }
         });
 
-        feedsViewModel.error().observe(this, new Observer<Throwable>() {
-            @Override
-            public void onChanged(@Nullable Throwable throwable) {
-                if (throwable != null) {
-                    Snackbar.make(parent, throwable.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
-                }
+        feedsViewModel.error().observe(this, throwable -> {
+            if (throwable != null) {
+                Snackbar.make(parent, throwable.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -152,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
 
         ViewHolder(View itemView) {
             super(itemView);
-            feedText = (TextView) itemView.findViewById(R.id.feed_text);
+            feedText = itemView.findViewById(R.id.feed_text);
         }
     }
 
@@ -188,12 +160,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleRegistry
                 sb.append(" ").append(holder.itemView.getContext().getString(R.string.snack));
             }
             holder.feedText.setText(sb.toString());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    editFeedClickListener.onEditFeedClicked(feed);
-                }
-            });
+            holder.itemView.setOnClickListener(v -> editFeedClickListener.onEditFeedClicked(feed));
         }
 
         @Override

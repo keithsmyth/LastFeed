@@ -21,10 +21,10 @@ class EditFeedViewHolder {
 
     EditFeedViewHolder(View itemView) {
         context = itemView.getContext();
-        timePicker = (TimePicker) itemView.findViewById(R.id.time_picker);
-        rightButton = (Button) itemView.findViewById(R.id.right_button);
-        leftButton = (Button) itemView.findViewById(R.id.left_button);
-        snackCheckBox = (CheckBox) itemView.findViewById(R.id.snack_checkbox);
-        saveButton = (Button) itemView.findViewById(R.id.save_feed_button);
+        timePicker = itemView.findViewById(R.id.time_picker);
+        rightButton = itemView.findViewById(R.id.right_button);
+        leftButton = itemView.findViewById(R.id.left_button);
+        snackCheckBox = itemView.findViewById(R.id.snack_checkbox);
+        saveButton = itemView.findViewById(R.id.save_feed_button);
     }
 }

@@ -1,9 +1,5 @@
 package com.keithsmyth.lastfeed.view;
 
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.TimePicker;
-
 import com.keithsmyth.lastfeed.R;
 import com.keithsmyth.lastfeed.view.MainActivity.OnSaveFeedClickListener;
 
@@ -19,46 +15,27 @@ class EditFeedViewBinder {
 
         TimePickerCompat.setHour(holder.timePicker, model.hour);
         TimePickerCompat.setMinute(holder.timePicker, model.minute);
-        holder.timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                holder.model.hour = hourOfDay;
-                holder.model.minute = minute;
-            }
+        holder.timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> {
+            holder.model.hour = hourOfDay;
+            holder.model.minute = minute;
         });
 
         bindSideButtons(holder, model);
 
-        holder.leftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.model.toggleSide(LEFT);
-                bindSideButtons(holder, holder.model);
-            }
+        holder.leftButton.setOnClickListener(v -> {
+            holder.model.toggleSide(LEFT);
+            bindSideButtons(holder, holder.model);
         });
 
-        holder.rightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.model.toggleSide(RIGHT);
-                bindSideButtons(holder, holder.model);
-            }
+        holder.rightButton.setOnClickListener(v -> {
+            holder.model.toggleSide(RIGHT);
+            bindSideButtons(holder, holder.model);
         });
 
         holder.snackCheckBox.setChecked(holder.model.snack);
-        holder.snackCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                holder.model.snack = isChecked;
-            }
-        });
+        holder.snackCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> holder.model.snack = isChecked);
 
-        holder.saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveFeedClickListener.onSaveFeedClicked(holder.model);
-            }
-        });
+        holder.saveButton.setOnClickListener(v -> saveFeedClickListener.onSaveFeedClicked(holder.model));
     }
 
     private void bindSideButtons(EditFeedViewHolder holder, EditFeedViewModel model) {
